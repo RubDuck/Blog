@@ -717,3 +717,54 @@ import ReactDOM from 'react-dom';
 #### HOC
 
 高阶组件（HOC）是一个函数，函数接受组件和参数同时返回一个组件
+
+```react
+const Commit = withSubscription(
+  CommentList,
+  (DataSource) => DataSource.getComments()
+)
+
+{/* HOC函数 */}
+
+function withSubscription(Component, selectData) {
+  {/* 返回另一个组件 */}
+  return class extends React.Component{
+    constructor(props) {
+      super(props);
+      this.handleChange = this.handleChange.bind(this);
+      this.state = {
+        data: selectData(DataSource, props)
+      }
+    }
+    componentDidMount() {
+      {/* 负责订阅相关的操作 */}
+      DataSource.addChangeListener(this.handleChange);
+    }
+    componentWillUnmount() {
+      DataSource.removeChangeListener(this.handleChange);
+    }
+    handleChange() {
+      this.setState({
+        data: selectData(DataSource, this.props)
+      })
+    }
+    render() {
+      {/* 组件渲染 */}
+      return <Component data={this.state.data} {...this.props} />
+    }
+  }
+}
+```
+
+Note：不要改变原始组件
+
+```react
+{/* 不能修改原始组件 */}
+function hocProps (Component) {
+  Component.prototype.componentDidUpdate = function() {
+    console.log('修改原始组件')
+  }
+  return Component
+}
+```
+
