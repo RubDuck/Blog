@@ -411,17 +411,20 @@ interface Bar {
   type: 'bar'
 }
 
-type a = Foo | Bar
+type All = Foo | Bar
 
 function never(val: All) {
   switch (val.type) {
-    case: 'foo':
+    case 'foo':
       // is foo
-    case: 'bar':
+      break;
+    case 'bar':
       // is bar
-    default
+      break;
+    default:
       // is never
       const ischeck: never = val;
+      break;
   }
 }
 
@@ -544,9 +547,27 @@ new Animal("Cat").name; // 错误: 'name' 是私有的.
 
 ###### 存取器
 
+将类改写成使用 get 和 set 
+
+```typescript
+class Employee {
+  private _fullName: string;
+  get fullName(): string {
+    return this._fullName
+  }
+  set fullName(newName: string) {
+    this._fullName = newName
+  }
+}
+let employee = new Employee()
+employee.fullName = 'Bolb Smith'
+```
+
 ###### 静态属性
 
 ###### 抽象类
+
+抽象类中定义的属性方法，派生类必须由对应的实现方式
 
 #### 接口
 
