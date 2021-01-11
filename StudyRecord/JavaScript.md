@@ -867,6 +867,179 @@ function responseFail(res) {};
 
 #### 事件侦听
 
+#### Set 和 Map
+
+###### 去除重复值
+
+```
+const s = new Set()
+[1, 2, 3, 4, 1, 2].forEach(e => s.add(e))
+```
+
+###### 成员不转换 ( NaN除外 )
+
+```javascript
+const s = new Set()
+s.add(5)
+s.add('5')
+s.size // 2
+
+const t = new Set()
+t.add(NaN)
+t.add(NaN)
+t.size // 1
+```
+
+###### 实例属性
+
+* Set.prototype.constructor
+* Set.prototype.size
+* Set.prototype.add( value )
+* Set.prototype.delete( value )
+* Set.prototype.has( value )
+* Set.prototype.clear( )
+
+可遍历操作
+
+* Set.prototype.keys( )
+* Set.prototype.values( )
+* Set.prototype.entries( )
+* Set.prototype.forEach( )
+
+###### WeakSet
+
+* 成员只能为对象
+
+  ```
+  const ws = new WeakSet()
+  ws.add(1) // Error
+  ws.add(Symbol()) // Error
+  ```
+
+* 数组成员只能为对象
+
+  ```
+  const ws = new WeakSet()
+  
+  ws.add([[1, 2, 3]]) // right
+  ws.add([1, 2]) // Error
+  ```
+
+* 实例属性
+
+  * WeakSet.prototype.add(value)
+  * WeakSet.prototype.delete(value)
+  * WeakSet.prototype.has(value)
+
+###### Map
+
+* 实例属性
+
+  * Map.size
+
+  * Map.prototype.set( key,  value )
+  * Map.prototype.get( key )
+  * Map.prototype.has( key )
+  * Map.prototype.delete( key )
+  * Map.prototype.clear( )
+
+* 遍历方法
+
+  * Map.prototype.keys( )
+  * Map.prototype.values( )
+  * Map.prototype.entries( )
+  * Map.prototype.forEach( )
+
+#### Symbol
+
+###### 属性唯一
+
+```javascript
+const a = Symbole('test')
+const b = Symbole('test')
+
+a == b // false
+```
+
+###### 设置对象属性并且获取值
+
+```javascript
+const a = Symbole('test')
+const b = Symbole('test')
+const object[a] = 'hello'
+object[b] = 'world'
+```
+
+###### 属性名遍历
+
+```javascript
+const a = Symbole('test')
+const b = Symbole('test')
+let object = {}
+object[a] = 'hello'
+object[b] = 'world'
+
+const objectSymbols = Object.getOwnPropertySymbols(object);
+
+```
+
+###### Symbol.for ( 同名属性 )
+
+```
+const a = Symbol.for('test')
+const b = Symbol.for('test')
+
+a === b  // true
+```
+
+###### Symbol.keyFor ( 获取Symbol )
+
+```
+const a = Symbol.for('test')
+Symbol.keyFor(a)
+```
+
+###### Symbol.hasInstance
+
+```javascript
+/*
+ 对象 Symbol.hasInstance属性，指向一个内部方法。
+ 当其他对象使用instanceof运算符时，会调用该方法
+*/
+
+class Myclass {
+  [Symbol.hasInstance](foo) {
+    return foo instanceof Array;
+  }
+}
+
+[1, 2, 3] instanceof new Myclass() // true
+
+```
+
+###### Symbol.match
+
+```javascript
+/*
+  对象的Symbol.match指向一个函数，当执行str.match(object)时
+  会调用该方法
+*/
+
+String.prototype.match(regexp)
+// 等同于
+regexp[Symbol.match](this)
+
+class MyMatcher {
+  [Symbol.match](string) {
+    return 'hello world'.indexOf(string);
+  }
+}
+
+'e'.match(new MyMatcher()) // 1
+```
+
+
+
 #### Promise
 
 ###### Promise.prototype.then
@@ -1225,106 +1398,106 @@ function run(gen){
 
 #### async/await
 
-* 基本用法（ N毫秒执行操作 ）
+###### 基本用法（ N毫秒执行操作 ）
 
-  ```javascript
-  function timeOut (ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms)
-    })
+```javascript
+function timeOut (ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+async function asyncPrint (value, ms) {
+  await timeOut(ms);
+  console.log(value)
+}
+
+asyncPrint('hello world', 2000)
+```
+
+###### 返回 Promise 对象
+
+```javascript
+{/* 
+  async函数返回一个Promise对象  return 值为 Promise对象的resolve值 
+  内部抛出错误，会导致返回的Promise对象变为 reject值
+  async函数返回的Promise对象，必须等到内部所有的await命令后面的Promise对象执行完才会发生状态改变
+  遇到retuen语句或者抛出错误会返回
+*/}
+```
+
+###### 函数睡眠
+
+```
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
+async function asyPrint(ms) {
+  for(let i = 1; i< 10; i++) {
+    console.log(i);
+    await sleep(ms)
   }
-  
-  async function asyncPrint (value, ms) {
-    await timeOut(ms);
-    console.log(value)
+}
+```
+
+###### 错误处理
+
+```javascript
+{/* await后面的异步操作出错，等同于async函数返回的Promise对象被reject */}
+
+async function error() {
+  await new Promise(function(resolve, reject) {
+    throw new Error('出错了')
+  })
+}
+error()
+  .then(v => console.log(v))
+  .catch(e => console.log(e))
+```
+
+###### 注意点
+
+* await 命令放在 try...catch代码块中
+
+  ```
+  async function myFunction() {
+    try {
+      await somethingThatReturnsAPromise();
+    } catch (err) {
+      console.log(err)
+    }
   }
-  
-  asyncPrint('hello world', 2000)
   ```
 
-* 返回 Promise 对象
+* await 继发
+
+  ```javascript
+  let foo = await getFoo();
+  let bar = await getBar();
+  
+  {/* 写法一 */}
+  let [foo, bar] = await Promise.all([getFoo(), getBar()])
+  
+  {/* 写法二 */}
+  let foo = getFoo();
+  let bar = getBar();
+  
+  let foos = await foo;
+  let bars = await bar;
+  ```
+
+* 循环方式
 
   ```javascript
   {/* 
-    async函数返回一个Promise对象  return 值为 Promise对象的resolve值 
-    内部抛出错误，会导致返回的Promise对象变为 reject值
-    async函数返回的Promise对象，必须等到内部所有的await命令后面的Promise对象执行完才会发生状态改变
-    遇到retuen语句或者抛出错误会返回
+    forEach()  方式不行
+    for 循环允许
+    reduce 循环允许
   */}
   ```
-
-* 函数睡眠
-
-  ```
-  function sleep(ms) {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms)
-    })
-  }
-  
-  async function asyPrint(ms) {
-    for(let i = 1; i< 10; i++) {
-      console.log(i);
-      await sleep(ms)
-    }
-  }
-  ```
-
-* 错误处理
-
-  ```javascript
-  {/* await后面的异步操作出错，等同于async函数返回的Promise对象被reject */}
-  
-  async function error() {
-    await new Promise(function(resolve, reject) {
-      throw new Error('出错了')
-    })
-  }
-  error()
-    .then(v => console.log(v))
-    .catch(e => console.log(e))
-  ```
-
-* 注意点
-
-  * await 命令放在 try...catch代码块中
-
-    ```
-    async function myFunction() {
-      try {
-        await somethingThatReturnsAPromise();
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    ```
-
-  * await 继发
-
-    ```javascript
-    let foo = await getFoo();
-    let bar = await getBar();
-    
-    {/* 写法一 */}
-    let [foo, bar] = await Promise.all([getFoo(), getBar()])
-    
-    {/* 写法二 */}
-    let foo = getFoo();
-    let bar = getBar();
-    
-    let foos = await foo;
-    let bars = await bar;
-    ```
-
-  * 循环方式
-
-    ```javascript
-    {/* 
-      forEach()  方式不行
-      for 循环允许
-      reduce 循环允许
-    */}
-    ```
 
 * 原理
 
@@ -1349,9 +1522,6 @@ function run(gen){
   }
   ```
 
-  
-
-  
 
 #### 函数柯里化
 
