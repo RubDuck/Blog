@@ -648,6 +648,28 @@ interface NumberDictionary {
 
 ###### 类类型
 
+* Implements
+
+  ```typescript
+  { /* 类可以以相同的方式实现接口或类型别名，但类不能实现使用类型别名定义的联合类型：*/ }
+  
+  interface Point {
+    x: number;
+    y: number;
+  }
+  
+  class SomePoint implements Point{
+    x = 1;
+    y = 2;
+  }
+  
+  type Part = { x: number } | { y: number }
+  
+  class SomePoint implements Part{
+    {/* Error */}
+  }
+  ```
+
 * 构造签名（new关键字）
 
   ```
@@ -1231,6 +1253,8 @@ let sym2 = Symbol("key"); // 可选的字符串key
       this.name = name
     }
   }
+  
+  const Cat = new Cat('xxl')
   ```
 
 * 方法装饰器

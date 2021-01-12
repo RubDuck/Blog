@@ -226,7 +226,51 @@
   export default App
   ```
 
-  
+
+#### Better-scroll
+
+###### forwardRef
+
+```react
+{/* 
+  Reacr.forwardRef会创建一个React组件，这个组件能够将其接受的ref属性转化到其他组件树下的另一个组件中。 
+*/}
+
+const FancyButton = React.forwardRef((props, ref) => (
+  <button ref={ref} className='FancyButton'>
+    {props.children}
+  </button>
+))
+
+const ref = React.createRef();
+<FancyButton ref={ref}> click me! </FancyButton>
+```
+
+#### Hook
+
+###### 函数组件定义
+
+```
+function Header(props) {
+  return (
+    <div>这是一个函数组件</div>
+  )
+}
+export default Header
+```
+
+###### 引入useState
+
+```
+import React, {useState} from "React"; //解构引入
+function Header(props) {
+  const [name, setName] = useState("张三") //name的初始值是“张三”，使用setName("李四")可以进行修改
+  return (
+    <div onClick={()=>{setName(“李四”)}}>{ name }</div> 
+  )
+}
+export default Header
+```
 
 
 
