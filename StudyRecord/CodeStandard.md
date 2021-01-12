@@ -163,8 +163,66 @@
   const baz = Array.from(foo, bar) // good
   ```
 
+###### 解构
 
-Gitlog
+* 函数属性解构
+
+  ```javascript
+  {/* bad */}
+  function getFullName(user) {
+    const firstName = user.firstName;
+    const lastName = user.lastName;
+    return `${firstName} ${lastName}`;
+  }
+  
+  {/* best */}
+  function getFullName({ firstName, lastName }) {
+    return `${firstName} ${lastName}`
+  }
+  ```
+
+* 数组解构
+
+  ```javascript
+  const arr = [1, 2, 3, 4]
+  {/* bad */}
+  
+  const first = arr[0]
+  const second = arr[1]
+  
+  {/* good */}
+  const [first, second] = arr
+  ```
+
+###### 字符
+
+* 单引号
+* 太长字符串 直接一行显示
+* `` 模板链接字符串
+
+###### 方法
+
+* 使用命名函数表达式代替函数声明
+
+  ```javascript
+  {/* bad */}
+  function foo() {}
+  {/* good */}
+  const short = function foo() {}
+  ```
+
+* 不要定义函数参数为 arguments 同时使用 ... 代替
+
+  ```javascript
+  {/* bad */}
+  function concatenateAll() {
+    const args = Array.prototype.slice.call
+  }
+  ```
+
+  
+
+#### GitLog
 
 ```react
 <type>(<scope>): <subject>
