@@ -1038,6 +1038,40 @@ class MyMatcher {
 'e'.match(new MyMatcher()) // 1
 ```
 
+#### Proxy
+
+proxy用于修改某些操作的默认行为，等同于再语言层面做出修改，所以属于一种 ‘元编程’
+
+###### 基础属性
+
+* get(target，propKey, receiver) ：拦截对象属性的读取
+* set(target，propKey，value，receiver)：拦截对象属性的设置
+* has(target，propKey)：拦截propKey in proxy
+* deleteProperty(target，propKey)：拦截 delete proxy[propKey]
+* ownKeys(target)
+* getOwnPropertyDescriptor
+* defineProperty(target, propKey,propDesc)：拦截Object.defineProperty
+* preventExtensions
+* getPrototypeOf
+* isExtensible
+* setPrototypeOf
+* apply
+* construct
+
+###### get劫持
+
+```javascript
+const handle = {
+  get(target, propKey, receiver) {
+    return function() {
+      return target[propKey](...arguments)
+    }
+  }
+}
+
+const proxy = new Proxy(history, handle)
+```
+
 
 
 #### Promise
@@ -1522,6 +1556,92 @@ error()
   }
   ```
 
+#### Class
+
+###### 静态方法
+
+```javascript
+{/* 方法前加上static关键字，改方法不会被实例继承，但是会被子类继承  */}
+
+class Foo {
+  static classMethod() {
+    return 'hello'
+  }
+}
+Foo.classMethod() // 'hello'
+var foo = new Foo();
+foo.classMethod() // Error
+
+
+{/* 子类可继承 */}
+class Bar extends Foo {
+  
+}
+Bar.classMethod() // 'hello'
+```
+
+###### 静态属性
+
+```javascript
+{/* Class 本身的属性 */}
+class Foo {
+  
+}
+Foo.prop = 1;
+
+{/* 静态新写法 static */}
+class Foo {
+  static prop = 1
+}
+```
+
+###### 私有属性
+
+* 命名区分
+
+  ```javascript
+  class Widget {
+    // 公有方法
+    foo () {}
+    // 私有方法
+    _bar () {}
+  }
+  ```
+
+* symbol命名区分
+
+  ```javascript
+  const bar = Symbol('bar')
+  export default class myClass{
+    // 公有方法
+    foo () {}
+    // 私有方法
+    [bar] () {}
+  }
+  ```
+
+* 私有提案
+
+  ```javascript
+  {/* 私有提案在属性名前加：# */}
+  class myClass {
+    #count = 0;
+    get () {}
+    increment () {
+      this.#count ++ ;
+    }
+  }
+  ```
+
+#### Class继承
+
+###### Object.getPrototypeOf
+
+```javascript
+{/* 判断一个类是否继承另一个类 */}
+
+Object.getPrototypeOf(ColorPoint) === Point
+```
 
 #### 函数柯里化
 
