@@ -522,6 +522,84 @@ console.log(child1)
 
 我们通过创建一个空的对象，同时将父级的原型方法赋值给空对象。最后通过创建这个对象来获得相对于的父级的方法。
 
+#### Module
+
+###### 运行时加载
+
+```javascript
+{/* CommonJS 模块 */}
+let { stat, exists, readfile } = require('fs')
+====
+let _fs = require('fs')
+let stat = _fs.stat
+let exists = _fs.exists
+let readfile = _fs.readfile
+```
+
+上面代码的实质是整体加载`fs`模块（即加载`fs`的所有方法），生成一个对象（`_fs`），然后再从这个对象上面读取 3 个方法。这种加载称为“运行时加载”，因为只有运行时才能得到这个对象，导致完全没办法在编译时做“静态优化”。
+
+###### ES6 模块
+
+```javascript
+{/* ES6模块 */}
+import { stat, exists, readFile } from 'fs'
+```
+
+上面代码的实质是从`fs`模块加载 3 个方法，其他方法不加载。这种加载称为“编译时加载”或者静态加载，即 ES6 可以在编译时就完成模块加载，效率要比 CommonJS 模块的加载方式高。当然，这也导致了没法引用 ES6 模块本身，因为它不是对象。
+
+###### export
+
+```javascript
+{/* 写法一 */}
+export var m = 1;
+{/* 写法二 */}
+var m = 1;
+export { m }
+{/* 写法三 */}
+var n = 1;
+export { n as m }
+
+{/* function class 也需遵循 */}
+export function f() {}
+
+function f() {}
+export { f }
+```
+
+###### 模块整体加载（*）
+
+```
+import * from 'fs'
+```
+
+#### Module加载实现
+
+###### 加载规则
+
+```javascript
+{/* 浏览器加载ES6模块，也是用<script>标签，但是要加入type='module'属性 */}
+
+<script type='module' src='./foo.js'></script>
+```
+
+###### 模块差异
+
+* CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。
+
+  ```
+  CommonJS 模块输出的是值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。
+  
+  ES6 模块的运行机制与 CommonJS 不一样。JS 引擎对脚本静态分析的时候，遇到模块加载命令import，就会生成一个只读引用。等到脚本真正执行时，再根据这个只读引用，到被加载的那个模块里面去取值。
+  ```
+
+* 模块是运行时加载，ES6 模块是编译时输出接口。
+
+  ```
+  差异是因为 CommonJS 加载的是一个对象（即module.exports属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
+  ```
+
+* 块的`require()`是同步加载模块，ES6 模块的`import`命令是异步加载，有一个独立的模块依赖的解析阶段。
+
 #### Constructor
 
 * vm.constructor的值指向的是它的父类
@@ -1675,6 +1753,63 @@ console.log(res); // 10
 ```
 
 函数柯里化，就目前理解而言，类似于参数的聚合。即当参数总和长度不超过限定值时，保存当前参数。
+
+#### 浏览器模型
+
+###### URL协议
+
+```javascript
+{/* URL支持javascript 协议 */}
+<a href= "javascript：void 0"> 
+```
+
+###### DOMContentLoaded && load
+
+```
+DOMContentLoaded
+　　当初始的 HTML 文档被完全加载和解析完成之后，DOMContentLoaded 事件被触发，而无需等待样式表、图像和子框架的完成加载。
+
+load
+　　load 仅用于检测一个完全加载的页面，页面的html、css、js、图片等资源都已经加载完之后才会触发 load 事件。
+```
+
+###### 浏览器组成
+
+* 渲染引擎
+
+  ```
+  将网页代码渲染为用户视觉可以感知的平面文档，一些常见的渲染引擎
+  Firefox：Gecko 引擎
+  Safari: Webkit 引擎
+  Chrome: Blink 引擎
+  IE: Trident 引擎
+  Edge: EdgeHTML 引擎
+  ```
+
+  * 解析代码：HTML代码解析为DOM，CSS代码解析为CSSDOM
+  * 对象合成：将DOM和CSSDOM合成一颗渲染树
+  * 布局：计算出渲染树的布局
+  * 绘制：将渲染树绘制到屏幕
+
+* 重流和重绘
+
+  * 脚本操作和样式表操作触发重流
+  * 重绘仅修改颜色等样式
+
+* JavaScript 引擎
+
+#### V8
+
+###### 渲染引擎及网页渲染
+
+```
+浏览器当前功能发展包括：网络、资源管理、网页浏览、多页面管理、插件和扩展、书签管理、历史记录管理、
+设置管理、下载管理、账户和同步、安全机制、隐私管理、外观主题、开发者工具等等。
+```
+
+###### 渲染引擎
+
+
 
 #### BOM
 
