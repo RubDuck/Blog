@@ -873,9 +873,173 @@ useLayoutEffect(() => {
     {/* 事件移除 */}
   }
 })
+
+useEffect(() => {
+  console.log('useEffect')
+}, [num])
+
+return(
+  <div onClick={() => setNum(num => num + 1)}></div>
+)
 ```
 
+###### useMemo
 
+计算属性
+
+```react
+const [num, setNum] = useState(1)
+const [age, setAge] = useState(18)
+
+coonst getDoubuleNum =useMemo(() => {
+  console.log('双倍快乐')
+  return 2 * num
+}, [num])
+
+return(
+  <div onClick={ () => { setAge( age => age+1 ) } }>
+    <br></br>
+    这是函数式组件----- num: { getDoubleNum }
+    <br></br>
+    age值 --- { age }
+  </div>
+)
+```
+
+###### useCallback
+
+与useMemo相似，返回值为函数
+
+###### useRef
+
+```react
+{/* useRef返回一个子元素索引，此索引在整个生命周期中保持不变 */}
+
+const [num, setNum] = useState(0)
+
+let timer
+useEffect(() => {
+  timer = setInterval(() => {
+    setNum(num => num + 1)
+  }, 400)
+}, [])
+
+useEffect(() => {
+  if (num > 10) {
+    clrearTimeout(timer)
+  }
+}, [num])
+
+return(
+  <div>
+    这是一个函数式组件 -----{ num }
+  </div>
+)
+
+{/* 当num 大于10时，并不会清除计时器，因为每一个timer都是独立的render，所以获取不到 */}
+
+```
+
+```react
+const [num, setNum] = useState(0)
+
+const ref = useRef()
+
+useEffect(() => {
+  ref.current = setInterval(() => {
+    setNum(num => num + 1)
+  }, 400)
+}, [])
+
+useEffect(() => {
+  if (num > 10) {
+    clrearTimeout(ref.current)
+  }
+}, [num])
+
+return(
+  <div>
+    这是一个函数式组件 -----{ num }
+  </div>
+)
+{/* useRef保存值 */}
+```
+
+###### useContext
+
+子组件之间共享父组件传入的状态
+
+```react
+const Context = createContext(null)
+
+fuction StateFunction () {
+  const [num, setNum] = useState(1)
+  return(
+    <div>
+      <Context.Provider value={num}>
+        <Item3></Item3>
+        <Item4></Item4>
+      </Context.Provider>
+    </div>
+  )
+}
+
+function Item3 () {
+  const num = useContext(Context)
+  return (
+    <div>
+      子组件：{ num }
+    </div>
+  )
+}
+
+function Item4 () {
+  const num = useContext(Context)
+  return (
+    <div>
+      子组件4： { num + 2 }
+    </div>
+  )
+}
+
+{/* useContext 全局信息传递 */}
+```
+
+###### useReducer
+
+函数式组件中的 Redux
+
+```react
+const store = {
+  age: 18,
+  num: 1
+}
+const reducer = (state, action) => {
+  switch(action.type) {
+    case 'add':
+      return {
+        ...state,
+        num: action.num + 1
+      }
+    default:
+      return {
+        ...state
+      }
+  }
+}
+
+function StateFunction () {
+  const [state, dispach] = useReducer(reducer, store)
+  return(
+    <div onClick={() => { 
+        dispacth({
+          type: 'add',
+          num: state.num
+        }) }}>
+    </div>
+  )
+}
+```
 
 
 
