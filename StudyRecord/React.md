@@ -768,3 +768,118 @@ function hocProps (Component) {
 }
 ```
 
+#### Hooks （在函数中调用react生命周期）
+
+###### useState
+
+修改state状态值
+
+```react
+
+import React , { useState } from 'react'
+
+function StateFunction () {
+  const [name, setName] = useState('函数')
+  {/*    类名   修改函数名             初始值 */}
+  return (
+    <div onClick = { () => setName('我使用hooks变成这样了') }>
+    </div>
+  )
+}
+```
+
+###### useEffect
+
+又称为副作用Hooks，给没有生命周期的组件，添加结束渲染的信号。执行时机：在渲染结束之后执行
+
+* 副作用Hooks ？
+  * 副作用：数据获取，数据订阅，以及手动更改React组件中的DOM都属于副作用
+  * 因为我们渲染出的页面都是静态的，任何在其之后的操作都会对他产生影响，所以称为副作用
+* 使用
+  * 第一个参数，接收一个函数作为参数
+  * 第二个参数接受依赖列表
+  * 返回一个函数，先执行返回函数，在执行参数函数
+
+```react
+import React, { useEffect, useState } from 'react'
+
+function StateFunction () {
+  const [num, setNum] = useState(0)
+  
+  useEffect(() => {
+    console.log('222函数式组件渲染结束')
+  }, [num])
+  
+  return(
+    <div onClick={() => setNum( num => num + 1 )}></div>
+  )
+}
+```
+
+* 清除副作用
+
+```react
+const [positions,setPositions] = useState({ x:0,y:0 })
+  
+useEffect( () => {
+    console.log('2222函数式组件结束渲染')
+
+    const updateMouse = (e) => {
+        console.log('打印当前位置')
+        setPositions({ x:e.clientX, y:e.clientY })
+    }
+    document.addEventListener('click',updateMouse)
+})
+  
+return (
+    <div>
+        <p>x:{ positions.x }</p>
+        <p>y:{ positions.y }</p>
+    </div>
+)
+
+{/*  以上会添加多个click监听事件  */}
+```
+
+```react
+useEffect( () => {
+    console.log('2222函数式组件结束渲染')
+
+    const updateMouse = (e) => {
+        console.log('渲染执行')
+        setPositions({ x:e.clientX, y:e.clientY })
+    }
+    document.addEventListener('click',updateMouse)
+  
+    retutn ()=> {
+     document.removeEventListener('click', updateMouse) 
+     console.log('销毁---')
+    }
+})
+```
+
+###### useLayoutEffect
+
+作用是在DOM更新完成之后执行莫格操作。执行时机：在DOM更新之后执行（执行顺序在useEffect之前）
+
+```react
+const [num, setNum] =useState(0)
+
+{/* 在类组件中庸componentWillMount生命周期来实现 */}
+useLayoutEffect(() => {
+  console.log('useLayoutEffect')
+  {/* 事件绑定 */}
+  return () => {
+    {/* 事件移除 */}
+  }
+})
+```
+
+
+
+
+
+
+
+
+
