@@ -1821,6 +1821,37 @@ window.opener // 打开新窗口
 window.devicePixelRatio  // DPR 比
 ```
 
+* 属性
+
+  * name
+  * closed | opener
+  * status
+  * devicePixelRatio
+
+* 方法
+
+  * alert | prompt | confirm
+  * open | close | stop
+  * moveTo | moveBy
+  * resizeTo | resizeBy
+  * scrollTo | scroll | scrollBy
+  * focus | blur
+  * getSelection | getComputedStyle
+  * requsetAnimationFrame
+
+* 事件
+
+  * load事件发生在文档在浏览器加载完毕，onload属性可以指定这个事件的回调函数
+
+    ````react
+    {/*
+      load：页面完全加载完成触发，完全加载：不仅仅是dom结构加载完，还需要所有的链接引用都加载完
+      ready: dom结构加载完成
+    */}
+    ````
+
+* 事件监听
+
 ###### location
 
 ```javascript
@@ -1887,6 +1918,120 @@ Strict : 请求完全限制Cookie携带
 Lax: 允许三种请求方式： 链接、预加载、Get请求
 None: 关闭SameSite 模式，当前默认为Lax ,通过设置Secure 和 SameSite = None 关闭
 ```
+
+#### XMLHttpRequest
+
+###### 原生请求
+
+```javascript
+const xhr = new XMLHttpRequest()
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4) {
+    /* do something */
+  }
+}
+xhr.send()
+```
+
+* response （返回请求体）
+
+* responseType (数据类型)
+
+  * “ ” ：text 文本数据
+  * " arraybuffer "：ArrayBuffer对象
+  * " blob "：Blob对象
+  * " document "：Document 对象
+  * " json "：JSON对象
+  * " text "：字符串
+
+* status ( HTTP状态码 )
+
+* timeout （ 超时状态时间 ）| ontimeout （超时监听函数）
+
+  ```javascript
+  const xhr = new XMLHttpRequest()
+  const url = '/server';
+  xhr.ontimeout = function() {
+    // 超时监听函数
+  }
+  
+  ....
+  xhr.timeout = 10 * 1000 // 超时时间设置
+  ```
+
+###### 事件监听
+
+* onloadstart ( HTTP 请求发出 ) 的监听函数 ：loadstart
+* onprogress ( 正在发送和加载数据 ) 的监听函数：progress
+* onabort （ 请求终止 ）的监听函数：abort
+* onerror ( 请求失败 ) 的监听函数：error
+* onload ( 请求成功 ) 的监听函数：load
+* ontimeout （ 用户超时请求 ）的监听函数：timeout
+* onloadend （请求完成，不论成功或失败）的监听函数：loadend
+
+文件上传 (xhr.upload)
+
+```javascript
+function unload(bolb) {
+  const xhr = new XMLHttpRequset();
+  xhr.open('POST', '/server', true);
+  xhr.onload = function(e) {}
+  
+  // upload监听
+  
+  xhr.upload.onprogress = function(e) {
+    if (e.lengthComputable) {
+      console.log(e.loaded / e.total) * 100
+    }
+  }
+  
+  xhr.send(blob)
+}
+
+upload(new Blob(['hello world'], { type: 'text/plain' }))
+
+```
+
+###### 实例方法
+
+* open (创建HTTP请求)
+
+  ```
+  xhr.open(method, url, async = false, user, password)
+  ```
+
+* send （发送请求）
+
+  ```
+  xhr.send(data)
+  ```
+
+* setRequsetHeader (设置头部信息)
+
+  ```
+  xhr.setRequsetHeader('Content-Type', 'application/json')
+  xhr.setRequsetHeader('Content-Length', JSON.stringify(data).length)
+  xhr.send(JSON.stringify(data))
+  ```
+
+* getResponseHeader ( 获取返回头部信息 )
+
+  ```
+  xhr.getResponseHeader('Last-Modified')
+  xhr.getAllResponseHeaders()
+  ```
+
+###### 事件
+
+* readyStateChange
+
+* progress
+
+  ```
+  xhr.addEventListener('progress', callback)
+  ```
+
+* load | error | abort | loadend | timeout
 
 #### Axios
 
