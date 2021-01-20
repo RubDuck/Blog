@@ -2033,6 +2033,143 @@ upload(new Blob(['hello world'], { type: 'text/plain' }))
 
 * load | error | abort | loadend | timeout
 
+#### 同源限制
+
+###### 概述
+
+同源指三个相同，协议相同、域名相同、端口相同
+
+###### 跨域方式
+
+* JSONP
+
+  ```
+  1.网页<script>元素，向服务器请求一个脚本，这不受同源限制（标签包含回调函数）
+  2.服务器收到请求，拼接字符串，将JSON数据放在函数名里
+  3.执行回调函数
+  ```
+
+* WebSocket
+
+  ```
+  应用层协议，首次连接依赖于http，首部添加Upgrade:websocket
+  ```
+
+* CORS
+
+  ```
+  跨域资源分享，属于跨源AJAX请求的根本解决方法
+  ```
+
+#### CORS通信
+
+###### 两种请求
+
+* 简单请求
+
+  * HEAD
+  * GET
+  * POST
+
+  ```
+  头部字段
+  
+  Accept
+  Accept-Language
+  Content-Language
+  Last-Event-ID
+  Content-Type: 仅限于三个值 application/x-www-form-urlencoded、multipart/form-data、text/plain
+  ```
+
+###### 基本流程
+
+* 对于简单请求，浏览器直接发出CORS请求，
+
+  ```typescript
+  具体来说在头信息之中增加一个Origin字段
+  
+  {/* 请求头信息 */}
+  
+  GET /cors HTTP/1.1
+  Origin: *
+  ```
+
+* 服务器响应
+
+  ```
+  Access-Control-Allow-Origin: http://api.bob.com
+  Access-Control-Allow-Credentials: true
+  Access-Control-Expose-Headers: FooBar
+  Content-Type: text/html; charset=utf-8
+  ```
+
+  * Access-Control-Allow-Origin (允许域名)
+  * Access-Control-Allow-Credentials（是否允许发送Cookie）
+  * Access-Control-Expose-Headers ()
+
+###### withCredentials
+
+* 关于浏览器请求Cookie携带
+
+  ```
+  当服务器指定：Access-Control-Allow-Credentials：true 时，即告知浏览器可以发送Cookie
+  客户端：须设置属性 withCredentials: true // 当前浏览器默认为 true
+  ```
+
+###### 非简单请求
+
+* 客服端 请求方式（PUT、DELETE)
+
+  ```
+  const url = 'http://api.alice.com/cors';
+  const xhr = new XMLHttpRequest();
+  xhr.open('PUT', url, true);
+  xht.setRequestHeader('X-Custom-Header', 'value')
+  xhr.sned()
+  ```
+
+* 服务端 - 预检
+
+  ```
+  服务端收到"预检请求"，检查Origin、Access-Control-Request-Method 和 Access-Control-Request-Headers
+  ```
+
+  * 回应
+
+    ```
+    HTTP/1.1 200 OK
+    Date: Mon, 01 Dec 2008 01:15:39 GMT
+    Server: Apache/2.0.61 (Unix)
+    Access-Control-Allow-Origin: http://api.bob.com
+    Access-Control-Allow-Methods: GET, POST, PUT
+    Access-Control-Allow-Headers: X-Custom-Header
+    ```
+
+  * 否定回应
+
+    ```
+    OPTIONS http://api.bob.com HTTP/1.1
+    Status: 200
+    Access-Control-Allow-Origin: https://notyourdomain.com
+    Access-Control-Allow-Method: POST
+    ```
+
+  * 正常回应
+
+    ```
+    PUT /cors HTTP/1.1
+    Origin: http://api.bob.com
+    Host: api.alice.com
+    X-Custom-Header: value
+    Accept-Language: en-US
+    Connection: keep-alive
+    User-Agent: Mozilla/5.0...
+    ```
+
+    
+
+  
+
 #### Axios
 
 默认配置
