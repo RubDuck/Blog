@@ -1142,6 +1142,7 @@ proxy用于修改某些操作的默认行为，等同于再语言层面做出修
 const handle = {
   get(target, propKey, receiver) {
     return function() {
+      console.log('-++++++')
       return target[propKey](...arguments)
     }
   }
@@ -1881,12 +1882,31 @@ navigator.language // 首选语言
 
 ###### history
 
-```
+```javascript
+{/* 操作 */}
 go() 
 back()
 forward()
+
+pushState()
+replaceState()
 lenght
+
+{/* 事件 */}
+popstate // 触发条件(go、back、forward)
 ```
+
+###### hash
+
+```javascript
+{/* 操作 */}
+location.hash = '#xxx'
+
+{/* 事件 */}
+hashchange
+```
+
+
 
 ###### cookie
 
@@ -1918,6 +1938,103 @@ Strict : 请求完全限制Cookie携带
 Lax: 允许三种请求方式： 链接、预加载、Get请求
 None: 关闭SameSite 模式，当前默认为Lax ,通过设置Secure 和 SameSite = None 关闭
 ```
+
+###### Location
+
+* 属性
+
+  * location.href ( 整个url )
+  * location.protocol ( 协议 )
+  * location.host ( 主机 )
+  * location.hostname ( 主机名 )
+  * location.port ( 端口 )
+  * location.pathname ( 路径 )
+  * location.search ( 查询参数 )
+  * location.hash ( hash )
+  * location.username ( 域名用户名 )
+  * location.password ( 域名前密码 )
+  * location.origin ( 协议+主机名+端口 )
+
+* 方法
+
+  * location.assign ( 浏览器立刻跳转新的 URL，后退可以返回当前页面 )
+  * location.replace ( 立刻跳转新的URL 替换当前history栈，后退无法返回当前页面 )
+  * location.reload（ 刷新当前页面 ）
+
+* URL解码和编码
+
+  * 转码
+
+    ```react
+    encodeURI | encodeURIComponent
+    
+    {/* encodeURI 转码整个URL */}
+    
+    encodeURI('http://www.example.com/q=春节') // "http://www.example.com/q=%E6%98%A5%E8%8A%82"
+    
+    {/* encodeURIComponent 转码URL的组成部分，会转码除了语义字符之外所有字符，即元字符也会被转码 */}
+    
+    encodeURIComponent('春节')
+    // "%E6%98%A5%E8%8A%82"
+    encodeURIComponent('http://www.example.com/q=春节')
+    // "http%3A%2F%2Fwww.example.com%2Fq%3D%E6%98%A5%E8%8A%82"
+    ```
+
+  * 解码
+
+    ```javascript
+    decodeURI | decodeURIComponent
+    
+    {/* decodeURI 解码整个URL */}
+    
+    decodeURI('http://www.example.com/q=%E6%98%A5%E8%8A%82') // "http://www.example.com/q=春节"
+    
+    {/* decodeURIComponent 解码URL的组成部分 */}
+    
+    decodeURIComponent('%E6%98%A5%E8%8A%82')  // "春节"
+    ```
+
+* URL接口
+
+  * 构造函数
+
+    ```javascript
+    var url = new URL('http://www.example.com/index.html')
+    url.href  //  'http://www.example.com/index.html'
+    ```
+
+  * 静态方法
+
+    ```javascript
+    {/* URL.createObjectURL 为上传/下载的文件、流媒体文件生成一个URL字符串 */}
+    
+    function handleFiles(files) {
+      for (var i = 0; i < files.length; i++) {
+        var img = document.createElement('img');
+        img.src = window.URL.createObjectURL(files[i]);
+        div.appendChild(img);
+      }
+    }
+    
+    {/* 结果 */}
+    blob:http://localhost/c745ef73-ece9-46da-8f66-ebes574789b1
+    
+    {/* URL.revokeObjectURL  释放URL.createObjectURL对象 */}
+    
+    
+    function handleFiles(files) {
+      for (var i = 0; i < files.length; i++) {
+        var img = document.createElement('img');
+        img.src = window.URL.createObjectURL(files[i]);
+        div.appendChild(img);
+        img.onload = function() {
+          window.URL.revokeObjectURL(this.src);
+        }
+      }
+    }
+    ```
+
+    
 
 #### XMLHttpRequest
 
