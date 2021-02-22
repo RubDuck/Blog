@@ -422,7 +422,7 @@ console.log(child1.getName()) // kevin
 
 ###### 构造函数继承
 
-`````
+```
 function Parent () {
     this.names = ['kevin', 'daisy'];
 }
@@ -440,9 +440,8 @@ console.log(child1.names); // ["kevin", "daisy", "yayu"]
 var child2 = new Child();
 
 console.log(child2.names); // ["kevin", "daisy"]
-```
 
-```
+
 function Parent () {
     this.names = ['kevin', 'daisy'];
 }
@@ -784,6 +783,131 @@ a[3].name='ssl'
 ###### let const
 
 let const 申明时时不会预分配内存空间的，并且会在分配变量时做一个检查，如果右相同的变量会报错。对于const来说，基础类型的值时不可以改变的，但是对于引用类型，可以改变堆内存中的值。
+
+###### 变量提升和暂时性死区
+
+* var 存在变量提升，let const 不存在变量提升。
+* let const 变量声明之前，改变量都是不可用的，即为暂时性死区
+
+#### 解构赋值
+
+###### 数组解构
+
+* 解构不成功，变量值等于undefined
+
+  ````
+  let [foo, [[bar], baz]] = [1, [[2]]];
+  // foo：1   bar：2   baz：undefiend
+  ````
+
+* 不完全解构
+
+  ````
+  let [foo, [bar]] = [1, [2, 3]]
+  // foo：1  bar：2
+  ````
+
+* 默认值
+
+  ```
+  let [foo = true] = []
+  // foo：true
+  ```
+
+###### 对象解构
+
+* 解构不成功，变量值等于undefined
+
+  ```
+  let { foo } = { bar: 'baz' }
+  // foo：undefined
+  ```
+
+* 对象解构
+
+  ```
+  let { log, sin, cos } = Math
+  ```
+
+* 别名
+
+  ```
+  let { foo: baz } = { foo: 'aaa', bar: 'bbb' }
+  // baz：'aaa'    foo： error: foo is not defined
+  ```
+
+* 默认值
+
+  ```
+  默认值生效条件是，对象的属性值严格等于undefined 
+  
+  var { x = 3 } = { x: undefined }
+  // x：3
+  
+  var { x = 3 } = { x: null }
+  // x：null
+  ```
+
+###### 字符串解构
+
+* 字符串会被转为类数组的对象
+
+  ```
+  const [a, b, c, d] = 'hello'
+  // a：'h'   b：'e'  c：'l'  d：'l'
+  ```
+
+###### 数值和布尔值得解构赋值
+
+解构赋值时，如果等号右边是数值和布尔值，则会先转为对象
+
+```
+let { toString: s } = 123
+// s: Number.prototype.toString
+
+let { toString: s } = true
+// s：Boolean.prototype.toString
+```
+
+undefined 和 null 无法转为对象，所以对他们进行解构赋值，都会报错
+
+```
+let { prop: x } = undefined // TypeError
+let { prop: y } = null // TypeError
+```
+
+###### 用途
+
+* 变量交换
+
+  ```
+  let x = 1;
+  let y = 2;
+  [x, y] = [y, x]
+  ```
+
+* JSON提取
+
+  ```
+  let jsonData = {
+    id: 42,
+    status: 'ok',
+    data: [1, 2]
+  }
+  let { id, status, data:number } = jsonData
+  // id：42  status：'ok'  number：[1, 2]
+  ```
+
+* 遍历Map
+
+  ```
+  const map = new Map();
+  map.set('first', 'hello')
+  map.set('second', 'world')
+  for (let [key, value] of map) {
+    console.log('key', key, 'value', value)
+  }
+  ```
 
 #### 数据类型
 
