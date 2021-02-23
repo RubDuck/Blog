@@ -1149,6 +1149,77 @@ a.constructor.prototype // Number
   [1, 2, 3, 4].flatMap(x => [[x * 2]])  只能展开一层
   // [[2], [4], [6], [8]]
   ```
+#### 对象扩展
+
+###### 属性的简洁表示
+
+```
+const foo = 'bar'
+const baz = { foo }
+// { foo: 'bar' }
+```
+
+###### 属性名的表示
+
+```
+obj.foo = true
+obj['f' + 'oo'] = true
+```
+
+###### 可枚举性
+
+```
+let obj =  { foo: 123 }
+Object.getOwnPropertyDescriptor(obj, 'foo')
+
+{
+  value: 123,
+  writable: true,  // 可修改value值
+  enumerable: true, // 可枚举
+  configurable: true // 是否可删除
+}
+```
+
+###### 遍历
+
+* for ... in  循环遍历对象自身和继承的可枚举属性
+* Object.keys( obj ) 返回一个数组，包含对象自身的（不含继承的）所有可枚举属性（不含Symbol 属性）的键值
+* Object..getOwnPropertyNames( obj ) 返回一个数的键值 （包含不可枚举）
+* Object.getOwnPropertySymbols( obj ) 返回对象自身的所有Symbol属性的键名
+
+###### 原型相关方法
+
+* isPrototypeOf  检测一个对象是否存在于另一个对象的原型链中
+
+  ```ja
+  function Person() {this.age = 100}
+  var personl = new Person;
+  
+  Person.prototype.isPrototypeOf(person1) // true
+  ```
+
+* Object.getPrototypeOf 获取原型属性
+
+  ```
+  Object.getPrototypeOf(personal) == Person.prototype   // tue
+  ```
+
+* hasOwnProperty  当前实例是否包含属性(自身属性)
+
+  ```
+  person1.hasOwnProperty('age')  // false    age为原型属性
+  ```
+
+* Object.getOwnPropertyName  如果你想要获得所有实例属性，无论他是否可枚举，可以使用这个方法
+
+  ```
+  var keys = Object.getOwnPropertyName(Person.prototype);
+  //  constructor , age
+  ```
+
+  
+
+* Object.keys
 
 #### 数据类型转化
 
