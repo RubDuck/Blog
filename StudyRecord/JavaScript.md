@@ -931,6 +931,224 @@ Object.getPrototypeOf(a) // Number
 let a = []
 a.constructor.prototype // Number
 ```
+#### 字符串新增方法
+
+##### 实例方法：includes，startsWith，endsWith
+
+* includes
+
+  ```
+  let s = 'hello world!'
+  s.includes('o') //  true
+  ```
+
+* startsWith 返回布尔值，表示参数字符串是否在原字符串的头部。
+
+  ```
+  let s = 'hello world'
+  s.startsWidth('hello') // true
+  ```
+
+* endsWith 返回布尔值，表示参数字符串是否在原字符串的尾部。
+
+  ```
+  let s = 'hello world'
+  s.endsWith('world') // true
+  ```
+
+###### repeat
+
+`repeat`方法返回一个新字符串，表示将原字符串重复`n`次。
+
+```
+'x'.repeat(2.9) // 'xx'
+```
+
+###### padStart  padEnd
+
+* padStart 头部补全
+
+  ```
+  'x'.padStart(5, 'ad') // 'adadx'
+  'xx'.padStart(3, 'ad') // 'axx'
+  ```
+
+* padEnd 尾部补全
+
+  ```
+  'x'.padEnd(5, 'ad') // 'xadad'
+  'xx'.padEnd(5, 'ad') // 'xxada'
+  ```
+
+###### trimStart   trimEnd
+
+* trimStart  消除字符串头部空格
+
+  ```
+  const a = ' abc '
+  a.trimStart() // 'abc '
+  ```
+
+* trimEnd 消除字符串尾部空格
+
+  ```
+  const a = ' abc '
+  a.trimEnd() // ' abc'
+  ```
+
+###### replaceAll
+
+```
+'abbbbbc'.replace('b', '_') // 'a_bbbbc'
+'abbbbbc'.replaceAll('b', '_') // 'a_b'
+```
+
+#### 数值扩展
+
+###### 数值判断
+
+* isFinite  Number.isFinite()`用来检查一个数值是否为有限的（finite），即不是`Infinity
+
+  ```
+  Number.isFinite(15) true
+  Number.isFinite(Infinity) false
+  ```
+
+* isNaN 用来检查数值是否为NaN
+
+  ```
+  Number.isNaN(NaN) // true
+  ```
+
+* isInteger 是否为整数
+
+  ```
+  Number.isInteger(1.00) // true
+  Number.isInteger(1.1) // false
+  ```
+
+* isSafeInteger 是用来判断一个整数是否落在这个范围之内
+
+  ```
+  Number.MAX_SAFE_INTEGER === Math.pow(2, 53) - 1
+  // true
+  Number.MAX_SAFE_INTEGER === 9007199254740991
+  // true
+  
+  Number.MIN_SAFE_INTEGER === -Number.MAX_SAFE_INTEGER
+  // true
+  Number.MIN_SAFE_INTEGER === -9007199254740991
+  
+  Number.isSafeInteger(1.1) // false
+  Number.isSafeInteger(1) // true
+  ```
+
+* 最大值和精度
+
+  ```
+  javascript 所有数字都保存为64位浮点数，即
+  最大精度：2^53
+  最大值：2^1024
+  ```
+
+#### 数组扩展
+
+###### 数组转换
+
+* [...] 解构赋值
+
+* Array.from
+
+  ```
+  let arrayLike = {
+    '0': 'a',
+    '1': 'b',
+    '2': 'c',
+    length: 3
+  }
+  // es5
+  var arr1 = [].slice.call(arrayLike)
+  // es6
+  var arr2 = Array.from(arrayLike)
+  ```
+
+* Array.of  将一组值转为数组
+
+  ```
+  Array.of(3, 11, 8) // [3, 11, 8]
+  Array.of() // []
+  ```
+
+* copyWithin 成员位置复制（修改原数组）
+
+  ```
+  Array.prototype.copyWithin(target, start=0, end = this.length)
+  [1, 2, 3, 4, 5].copyWithin(0, 3)
+  // [4, 5, 3, 4, 5]
+  
+  上面代码表示将从 3 号位直到数组结束的成员（4 和 5），复制到从 0 号位开始的位置，结果覆盖了原来的 1 和 2。
+  ```
+
+* find  findIndex
+
+  ```
+  find 寻找符合条件的第一个数组成员
+  findeIndex 寻找符合条件的第一个数组成员的位置
+  ```
+
+* fill
+
+  ```
+  填充数组
+  ['a', 'b', 'c'].fill(7)  // [7,7,7]
+  ['a', 'b', 'c'],fill(7, 0, 1) // [7, 'b', 'c']
+  ```
+
+* 遍历新方式
+
+  * entries()
+
+  * keys()
+
+  * values()
+
+    ```
+    for (let index of ['a', 'b'].keys()) {
+      console.log(index);
+    }
+    // 0
+    // 1
+    
+    for (let elem of ['a', 'b'].values()) {
+      console.log(elem);
+    }
+    // 'a'
+    // 'b'
+    
+    for (let [index, elem] of ['a', 'b'].entries()) {
+      console.log(index, elem);
+    }
+    // 0 "a"
+    // 1 "b"
+    ```
+
+* 数组扁平化 flat  faltMap
+
+  ```
+  [1,2,[3]].flat()   // [1,2,3]
+  [1,2,3,[[4]]].flat() // [1,2,3,[4]]
+  [1,2,3,[[4]]].flat(2) // [1,2,3,4]    接受参数表示扁平深度
+  
+  
+  // 相当于 [[2, 4], [3, 6], [4, 8]].flat()
+  [2, 3, 4].flatMap((x) => [x, x * 2])
+  // [2, 4, 3, 6, 4, 8]
+  
+  
+  // 相当于 [[[2]], [[4]], [[6]], [[8]]].flat()
+  [1, 2, 3, 4].flatMap(x => [[x * 2]])  只能展开一层
+  // [[2], [4], [6], [8]]
+  ```
 
 #### 数据类型转化
 
