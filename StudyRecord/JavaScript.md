@@ -1919,8 +1919,54 @@ function run(gen){
     next();
 }
 ```
+###### Generator 和 异步
 
+* Javascript语言的Thunk函数
 
+  ```
+  JavaScript语言是传值调用，它的Thunk函数含义有所不同。在JavaScript语言中,Thunk函数替换的不是表达式，而是多参数函数，将其替换成一个只接受回调函数组委参数的单参数函数。
+  
+  fs.readFile(fileName, callback) // 多参数
+  
+  var Thunk = function(fileName) {
+    return function(callback) {
+      return fs.readFile(fileName, callback);
+    }
+  }
+  var readFileThunk = Thunk(fileName)
+  readFileThunk(callback)
+  ```
+
+* Thunk函数和generator 的自动化 (核心就是回调)
+
+  ```javascript
+  //   异步操作
+  
+  var fs = require('fs')
+  var thunkify = require('thunkify')
+  var readFileThunk = thunkify(fs.readFile)
+  
+  var gen = function* ()  {
+    var r1 = yield readFileThunk('/home')
+    console.log(r1.toString())
+    var r2 = yield readFileThunk('/index')
+    console.log(r2.toString())
+  }
+  
+  
+  // Thunk执行
+  
+  var g = gen()
+  r1.value(function (err, data) {
+    if (err) throw err;
+    var r2 = g.next(data);
+    r2.value(function (err, data) {
+      if (err) throw err;
+      g.next(data);
+    });
+  });
+  
+  ```
 
 #### async/await
 
