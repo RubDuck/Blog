@@ -2273,6 +2273,139 @@ load
 
 #### BOM
 
+###### 浏览器
+
+* 代码嵌入方法
+
+  * script元素嵌入代码
+  * script元素外部加载脚本
+  * url协议（默认http）
+
+* script 元素
+
+  * 工作原理
+
+    ```javascript
+    加载流程：
+    1.浏览器一边下载 HTML 网页，一边开始解析。也就是说，不等到下载完，就开始解析。
+    2.解析过程中，浏览器发现<script>元素，就暂停解析，把网页渲染的控制权转交给 JavaScript 引擎。
+    3.如果<script>元素引用了外部脚本，就下载该脚本再执行，否则就直接执行代码。
+    4.JavaScript 引擎执行完毕，控制权交还渲染引擎，恢复往下解析 HTML 网页。
+    ```
+
+  * 事件：DOMContentLoaded  onload
+
+    ```javascript
+    // 头部事件监听
+    
+    <head>
+      <script>
+        document.addEventListener(
+          'DOMContentLoaded',
+          function (event) {
+            console.log(document.body.innerHTML);
+          }
+        );
+      </script>
+    </head>
+    
+    // 当<script>标签指定的外部脚本文件下载和解析完成，会触发一个load事件，可以把所需执行的代码，放在这个事件的回调函数里面。
+    
+    <script src="jquery.min.js" onload="console.log(document.body.innerHTML)">
+    </script>
+    ```
+
+  * defer  async
+
+    ```
+    defer属性的运行流程如下。
+    
+    浏览器开始解析 HTML 网页。
+    解析过程中，发现带有defer属性的<script>元素。
+    浏览器继续往下解析 HTML 网页，同时并行下载<script>元素加载的外部脚本。
+    浏览器完成解析 HTML 网页，此时再回过头执行已经下载完成的脚本。
+    
+    
+    async属性的作用是，使用另一个进程下载脚本，下载时不会阻塞渲染。
+    
+    浏览器开始解析 HTML 网页。
+    解析过程中，发现带有async属性的script标签。
+    浏览器继续往下解析 HTML 网页，同时并行下载<script>标签中的外部脚本。
+    脚本下载完成，浏览器暂停解析 HTML 网页，开始执行下载的脚本。
+    脚本执行完毕，浏览器恢复解析 HTML 网页。
+    ```
+
+  * 动态脚本 ( 不阻塞页面渲染，无法保证执行顺序 )
+
+    ```javascript
+    ['a.js', 'b.js'].forEach(function(src) {
+      var script = document.createElement('script');
+      script.src = src;
+      document.head.appendChild(script);
+    });
+    
+    // 设置属性保证执行顺序
+    ['a.js', 'b.js'].forEach(function(src) {
+      var script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      document.head.appendChild(script);
+    });
+    
+    // 回调监听
+    function loadScript(src, done) {
+      var js = document.createElement('script');
+      js.src = src;
+      js.onload = function() {
+        done();
+      };
+      js.onerror = function() {
+        done(new Error('Failed to load script ' + src));
+      };
+      document.head.appendChild(js);
+    }
+    
+    ```
+
+* 重流重绘
+
+  一般情况下，浏览器的layout是lazy的，也就是说：在js脚本执行时，是不会去更新DOM的，任何对DOM的修改都会被暂存在一个队列中，在当前js的执行上下文执行后，进行集中修改。
+
+  * 重绘：颜色
+  * 重流：
+    * 通过js获取需要计算的DOM属性
+    * 添加或删除DOM元素
+    * 改变字体
+    * css伪类激活，比如hover
+    * 通过js修改DOM元素样式且该样式涉及到尺寸的改变
+  * tips
+    * 读取 DOM 或者写入 DOM，尽量写在一起，不要混杂。不要读取一个 DOM 节点，然后立刻写入，接着再读取一个 DOM 节点。
+    * 缓存 DOM 信息。
+    * 不要一项一项地改变样式，而是使用 CSS class 一次性改变样式。
+    * 使用`documentFragment`操作 DOM
+    * 动画使用`absolute`定位或`fixed`定位，这样可以减少对其他元素的影响。
+    * 只在必要时才显示隐藏元素。
+    * 使用`window.requestAnimationFrame()`，因为它可以把代码推迟到下一次重绘之前执行，而不是立即要求页面重绘。
+    * 使用虚拟 DOM（virtual DOM）库。
+
+* JavaScript引擎
+
+  主要作用是读取网页中的JavaScript代码，对其处理后运行。
+
+  JavaScript是一种解释型语言，即不需要编译，由解释器实时运行。
+
+  ```javascript
+  早期处理过程：
+  1.读取代码，进行词法分析（Lexical analysis），将代码分解成词元（token）。
+  2.对词元进行语法分析（parsing），将代码整理成“语法树”（syntax tree）。
+  3.使用“翻译器”（translator），将代码转为字节码（bytecode）。
+  4.使用“字节码解释器”（bytecode interpreter），将字节码转为机器码。
+  ```
+
+  webkit大致结构（来源网络）
+
+  ![img](https://pic1.zhimg.com/80/v2-959135939fe2cbc2d9a437ef81dff328_720w.png)
+
 ###### window
 
 ```
