@@ -2628,7 +2628,117 @@ None: 关闭SameSite 模式，当前默认为Lax ,通过设置Secure 和 SameSit
 
     
 
-#### XMLHttpRequest
+#### DOM
+
+文档对象模型，JavaScript操作网页接口，作用即将网页转为一个JavaScript对象。
+
+浏览器绘制过程大致可为：
+
+* 浏览器根据DOM模型，将文档结构化，生成一些列节点
+* 节点组成树状结构（DOM Tree）
+* 解析css（CSS Tree）
+* DOM Tree 结合 CSS Tree 生成 Render Tre
+* 浏览器使用UI层进行绘制
+
+###### 节点
+
+节点是DOM的最小组成单位，节点类型有以下七种：
+
+* Document：整个文档树的顶层节点
+* DocumentType: doctype标签
+* Element：网页的各种HTML标签（<a></a>,<body>）
+* Attr：网页元素属性
+* Text：标签之间或标签包含文本
+* Comment：注释
+* DocumentFragment：文档片段
+
+###### Node接口
+
+Node基础属性
+
+* nodeType （节点类型）
+  * 文档节点（document）: 9
+  * 元素节点（element）: 1
+  * 属性节点（attr）：2
+  * 文本节点（text）：3
+  * 文档片段节点（documentFragment）：1
+  * 文档类型节点（DocumentType）: 10
+  * 注释节点（Comment）: 8
+* tetxContent
+
+Node方法
+
+* appendChild
+* insertBefore
+* removeChild
+* replaceChild
+
+###### Nodelist接口
+
+多个节点的集合：NodeList 和 HTNLCollection
+
+###### Document
+
+* 快捷属性
+
+  * scrollingElement （文档滚动元素）
+  * activeElement（焦点元素）
+  * fullscreenElement （全屏状态判断）
+
+* 节点属性
+
+  * links （链接属性）
+  * forms （表单节点）
+  * images （图片节点）
+  * scripts （script节点）
+  * styleSheets （内嵌、引入样式表集合）
+
+* 文档静态信息属性
+
+  * documentURI  URL 
+  * domain （域名，不包含协议端口）
+  * location
+  * lastModified
+  * title
+  * characterSet
+  * referrer
+
+* 文档状态属性
+
+  * hidden /  visibilityState
+
+  * readyState
+
+    ```
+    loading interactive complete
+    ```
+
+* 方法
+
+  * open |  close
+  * write |  writeIn
+  * querySelector | querySelectorAll
+  * getElementsByTagName 
+  * getElementsByClassName
+  * getElementsByName
+  * getElementsById
+  * createElement
+  * createTextNode
+  * createAttribute
+  * createComment
+  * createDocumentFragment
+  * createEvent
+  * addEventListener
+  * removeEventListener
+  * dispatchEvent
+
+###### Element
+
+* 实例属性
+  * id
+  * tagName
+  * accessKey 
+  * draggable
 
 ###### 原生请求
 
