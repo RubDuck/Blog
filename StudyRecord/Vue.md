@@ -373,3 +373,98 @@ event.stopPropagation()
 子组件：
 this.$emit('update:foo', newVal)
 ```
+## 特殊笔记
+
+#### VNode
+
+###### 构造函数
+
+```javascript
+function VNode(
+    tag, data, children, 
+    text, elm, context, 
+    componentOptions
+) {    
+    this.tag = tag; // 标签名
+    this.data = data;    
+    this.children = children; // 子元素
+    this.text = text; // 文本内容
+    this.elm = elm; // Dom 节点
+    this.context = context;    
+    this.componentOptions = componentOptions;    
+    this.componentInstance = undefined;    
+    this.parent = undefined;    
+    this.isStatic = false; // 是否静态节点
+    this.isComment = false; // 是否是注释节点
+    this.isCloned = false; // 是否克隆节点
+};
+```
+
+example
+
+```html
+<div class="parent" style="height:0" href="2222">
+    111111
+</div>
+
+#######  VNODE
+{    
+    tag: 'div',    
+    data: {        
+        attrs:{href:"2222"}
+        staticClass: "parent",        
+        staticStyle: {            
+            height: "0"
+        }
+    },    
+    children: [{        
+        tag: undefined,        
+        text: "111111"
+    }]
+}
+```
+
+###### VNODE生成
+
+渲染函数
+
+```javascript
+function (){ 
+    with(this){  
+        return _c('div',{attrs:{"href":"xxxx"}},["1111"]).
+    } 
+}
+```
+
+_c
+
+```
+vm._c = function(a, b, c, d) {    
+    return createElement(vm, a, b, c, d, false);
+};
+```
+
+createElement
+
+```javascript
+function createElement(
+    context, tag, data, 
+    children, normalizationType
+) {    
+    var vnode;    
+    if (tag是正常html标签) {
+        vnode = new VNode(
+            tag, data, children, undefined, 
+            undefined, context
+        );
+    } 
+    else if (tag 是组件) {
+        vnode = createComponent(
+            Ctor, data, context, 
+            children, tag
+        );
+    }    
+    return vnode
+}
+```
+
