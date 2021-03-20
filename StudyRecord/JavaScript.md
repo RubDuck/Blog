@@ -3112,4 +3112,59 @@ if(new Date() - payload.iat < 'token 有效期'){
   return 'token 有效'
 }
 ```
+#### 关于作用域和循环的一些问题
 
+###### for  forEach map filter some
+
+* for 大致可以理解为一段代码重复执行多次，且当前执行的作用域相同，当采用立即执行函数和es6的块级作用域时，可分别处于各自的作用域
+
+  ```javascript
+  var result = [];
+  for (var i = 0; i < 2; i ++) {
+    result[i] = function() {
+      console.log(i)
+    }
+  }
+  
+  // 等于
+  
+  var result = [];
+  var i = 0
+  result[0] = function() { console.log(i) }
+  var i = 1
+  result[1] = function(){console.log(i)}
+  ....
+  
+  // 使用块级作用域
+  
+  var result = [];
+  for (var i = 0; i < 2; i ++) {
+    result[i] = (function(i) {
+      return function() {console.log(i)}
+    }(i))
+  }
+  
+  // 等于
+  
+  var result = [];
+  var i = 0
+  result[0] = function() { console.log(0) }
+  var i = 1
+  result[1] = function(){console.log(1)}
+  ....
+  ```
+
+* forEach
+
+  ```javascript
+  Array.prototype.myForEach = function(func) {
+      for (var i = 0; i < this.length; i++) {
+          var item = this[i]
+          func(item)
+      }
+  }
+  //
+  相当于For循环执行多个立即执行函数
+  ```
+
+  
